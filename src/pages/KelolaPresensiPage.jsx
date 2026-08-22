@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useApp, getTodayDateString, formatLocalDateString } from '../context/AppContext';
 import { showWarningAlert } from '../utils/sweetalert';
 import { ClipboardEdit, Filter, Calendar, Users, GraduationCap, Search, CheckCircle2 } from 'lucide-react';
 
-export const KelolaPresensiPage = () => {
+export const KelolaPresensiPage = ({ initialType = 'Siswa' }) => {
   const { 
     guruTendikList, 
     siswaList, 
@@ -17,9 +17,16 @@ export const KelolaPresensiPage = () => {
   } = useApp();
 
   const [selectedDate, setSelectedDate] = useState(getTodayDateString());
-  const [targetType, setTargetType] = useState('Siswa'); // 'Siswa' | 'Guru' | 'Tendik'
+  const [targetType, setTargetType] = useState(initialType === 'GTK' ? 'Guru' : 'Siswa'); // 'Siswa' | 'Guru' | 'Tendik'
   const [selectedRombel, setSelectedRombel] = useState('Semua');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Sinkronkan state saat menu sidebar berubah
+  useEffect(() => {
+    setTargetType(initialType === 'GTK' ? 'Guru' : 'Siswa');
+    setSelectedRombel('Semua');
+    setSearchQuery('');
+  }, [initialType]);
 
   const tapelAktif = getTapelAktif();
 
@@ -180,23 +187,24 @@ export const KelolaPresensiPage = () => {
           />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Filter size={18} color="#4f46e5" />
-          <label style={{ fontSize: '0.85rem', fontWeight: 700 }}>Pihak:</label>
-          <select 
-            className="form-control"
-            style={{ width: '140px' }}
-            value={targetType}
-            onChange={e => {
-              setTargetType(e.target.value);
-              setSelectedRombel('Semua');
-            }}
-          >
-            <option value="Siswa">Siswa</option>
-            <option value="Guru">Guru</option>
-            <option value="Tendik">Tendik</option>
-          </select>
-        </div>
+        {initialType === 'GTK' && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Filter size={18} color="#4f46e5" />
+            <label style={{ fontSize: '0.85rem', fontWeight: 700 }}>Pihak:</label>
+            <select 
+              className="form-control"
+              style={{ width: '140px' }}
+              value={targetType}
+              onChange={e => {
+                setTargetType(e.target.value);
+                setSelectedRombel('Semua');
+              }}
+            >
+              <option value="Guru">Guru</option>
+              <option value="Tendik">Tendik</option>
+            </select>
+          </div>
+        )}
 
         {targetType === 'Siswa' && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

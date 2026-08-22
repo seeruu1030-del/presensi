@@ -125,7 +125,10 @@ const AppContent = () => {
       case 'rekap-siswa':
         return <RekapSiswaPage />;
       case 'kelola-presensi':
-        return <KelolaPresensiPage />;
+      case 'kelola-presensi-siswa':
+        return <KelolaPresensiPage initialType="Siswa" />;
+      case 'kelola-presensi-gtk':
+        return <KelolaPresensiPage initialType="GTK" />;
       default:
         return <DashboardPage />;
     }

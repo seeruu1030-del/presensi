@@ -34,6 +34,7 @@ export const Sidebar = () => {
   const [isSiswaOpen, setIsSiswaOpen] = useState(false);
   const [isCetakOpen, setIsCetakOpen] = useState(false);
   const [isPengaturanOpen, setIsPengaturanOpen] = useState(false);
+  const [isKelolaPresensiOpen, setIsKelolaPresensiOpen] = useState(false);
 
   // Auto collapse dropdowns when activeMenu changes to an outside item
   useEffect(() => {
@@ -41,32 +42,44 @@ export const Sidebar = () => {
     const isSiswaMenu = ['data-siswa', 'tugas-siswa', 'siswa-nonaktif'].includes(activeMenu);
     const isCetakMenu = ['cetak-kartu-gtk', 'cetak-kartu-siswa'].includes(activeMenu);
     const isPengaturanMenu = ['pengaturan-presensi', 'pengaturan-backup'].includes(activeMenu);
+    const isKelolaPresensiMenu = ['kelola-presensi-gtk', 'kelola-presensi-siswa'].includes(activeMenu);
 
     if (isGtkMenu) {
       setIsGtkOpen(true);
       setIsSiswaOpen(false);
       setIsCetakOpen(false);
       setIsPengaturanOpen(false);
+      setIsKelolaPresensiOpen(false);
     } else if (isSiswaMenu) {
       setIsSiswaOpen(true);
       setIsGtkOpen(false);
       setIsCetakOpen(false);
       setIsPengaturanOpen(false);
+      setIsKelolaPresensiOpen(false);
     } else if (isCetakMenu) {
       setIsCetakOpen(true);
       setIsGtkOpen(false);
       setIsSiswaOpen(false);
       setIsPengaturanOpen(false);
+      setIsKelolaPresensiOpen(false);
     } else if (isPengaturanMenu) {
       setIsPengaturanOpen(true);
       setIsGtkOpen(false);
       setIsSiswaOpen(false);
       setIsCetakOpen(false);
+      setIsKelolaPresensiOpen(false);
+    } else if (isKelolaPresensiMenu) {
+      setIsKelolaPresensiOpen(true);
+      setIsGtkOpen(false);
+      setIsSiswaOpen(false);
+      setIsCetakOpen(false);
+      setIsPengaturanOpen(false);
     } else {
       setIsGtkOpen(false);
       setIsSiswaOpen(false);
       setIsCetakOpen(false);
       setIsPengaturanOpen(false);
+      setIsKelolaPresensiOpen(false);
     }
   }, [activeMenu]);
 
@@ -137,7 +150,18 @@ export const Sidebar = () => {
             { id: 'cetak-kartu-siswa', label: 'Peserta Didik', icon: GraduationCap }
           ]
         },
-        { id: 'kelola-presensi', label: 'Kelola Presensi', icon: ClipboardEdit },
+        {
+          id: 'kelola-presensi-parent',
+          label: 'Kelola Presensi',
+          icon: ClipboardEdit,
+          isParent: true,
+          isOpen: isKelolaPresensiOpen,
+          toggleOpen: () => setIsKelolaPresensiOpen(!isKelolaPresensiOpen),
+          subItems: [
+            { id: 'kelola-presensi-gtk', label: 'Presensi GTK', icon: UserCheck },
+            { id: 'kelola-presensi-siswa', label: 'Presensi Siswa', icon: GraduationCap }
+          ]
+        },
         { id: 'rekap-guru', label: 'Rekap Guru & Tendik', icon: FileText },
         { id: 'rekap-siswa', label: 'Rekap Presensi Siswa', icon: ClipboardCheck }
       ]
