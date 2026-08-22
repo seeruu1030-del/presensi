@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model ProfilSekolah {
+  id                 String  @id @default(uuid())
+  nama_sekolah       String
+  npsn               String
+  alamat             String?
+  kepala_sekolah     String?
+  nip_kepala_sekolah String?
+  no_telp            String?
+  email              String?
+  website            String?
+  logo               String?
+  maps_embed         String?
+  latitude           String?
+  longitude          String?
+}
+
+model Pengaturan {
+  id                 String  @id @default(uuid())
+  jam_masuk          String
+  jam_pulang         String
+  toleransi_menit    Int
+  voice_notification Boolean
+  semester_aktif     String
+  hari_efektif       String? @default("Senin,Selasa,Rabu,Kamis,Jumat,Sabtu")
+  hari_libur         String? @default("[]")
+  jadwal_harian      String? @default("{}")
+  wa_provider        String? @default("Lokal")
+  wa_domain          String?
+  wa_token           String?
+}
+
+model Tapel {
+  id     String @id @default(uuid())
+  tahun  String
+  status String
+}
+
+model Kelas {
+  id         String  @id @default(uuid())
+  nama       String
+  tingkat    String
+  wali_kelas String?
+  tapel      String? @default("2025/2026")
+  semester   String? @default("Ganjil")
+  siswa      Siswa[]
+}
+
+model GuruTendik {
+  id              String  @id @default(uuid())
+  nik             String? @unique
+  nip             String?
+  nuptk           String?
+  nama            String
+  kategori        String  // "Guru" or "Tendik"
+  jabatan         String?
+  gender          String  // "L" or "P"
+  no_hp           String?
+  alamat          String?
+  status          String
+  alasan_nonaktif String?
+  tgl_nonaktif    String?
+  qr_code         String  @unique
+  foto            String?
+  password        String  @default("123456")
+}
+
+model Siswa {
+  id        String  @id @default(uuid())
+  nisn      String  @unique
+  nama      String
+  kelas_id  String?
+  kelas     Kelas?   @relation(fields: [kelas_id], references: [id], onDelete: SetNull)
+  gender    String  // "L" or "P"
+  orang_tua String?
+  no_hp     String?
+  alamat    String?
+  status    String  @default("Aktif")
+  qr_code   String  @unique
+  foto      String?
+  password  String  @default("123456")
+}
+
+model Admin {
+  id       String @id @default(uuid())
+  username String @unique
+  password String
+  nama     String
+}
+
+model LogPresensi {
+  id          String    @id @default(uuid())
+  target_id   String
+  target_type String    // "Siswa", "Guru", "Tendik"
+  tanggal     DateTime  @db.Date
+  jam_masuk   String?
+  jam_pulang  String?
+  status      String
+  keterangan  String?
+}
