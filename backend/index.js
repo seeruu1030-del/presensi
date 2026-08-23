@@ -24,7 +24,8 @@ app.get('/api/profil-sekolah', async (req, res) => {
     let profil = await prisma.profilSekolah.findFirst();
     res.json(profil || {});
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error /api/profil-sekolah:", error);
+    res.status(500).json({ error: error.message || 'Database connection error', detail: String(error) });
   }
 });
 
