@@ -474,5 +474,9 @@ app.post('/api/whatsapp/logout', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
-  whatsapp.initializeWhatsApp(); // Start WA client
+  try {
+    whatsapp.initializeWhatsApp(); // Start WA client safely
+  } catch (err) {
+    console.error('WhatsApp failed to start:', err.message);
+  }
 });

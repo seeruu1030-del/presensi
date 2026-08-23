@@ -15,53 +15,58 @@ function initializeWhatsApp() {
   clientStatus = 'AUTHENTICATING';
   qrDataURL = null;
 
-  client = new Client({
-    authStrategy: new LocalAuth({ dataPath: './.wwebjs_auth' }),
-    puppeteer: {
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true
-    }
-  });
+  try {
+    client = new Client({
+      authStrategy: new LocalAuth({ dataPath: './.wwebjs_auth' }),
+      puppeteer: {
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--no-zygote'],
+        headless: true
+      }
+    });
 
-  client.on('qr', async (qr) => {
-    console.log('[WhatsApp] QR Code received.');
-    clientStatus = 'QR_READY';
-    try {
-      qrDataURL = await qrcode.toDataURL(qr);
-    } catch (err) {
-      console.error('[WhatsApp] Failed to generate QR Data URL:', err);
-    }
-  });
+    client.on('qr', async (qr) => {
+      console.log('[WhatsApp] QR Code received.');
+      clientStatus = 'QR_READY';
+      try {
+        qrDataURL = await qrcode.toDataURL(qr);
+      } catch (err) {
+        console.error('[WhatsApp] Failed to generate QR Data URL:', err);
+      }
+    });
 
-  client.on('ready', () => {
-    console.log('[WhatsApp] Client is ready!');
-    clientStatus = 'CONNECTED';
-    qrDataURL = null;
-  });
+    client.on('ready', () => {
+      console.log('[WhatsApp] Client is ready!');
+      clientStatus = 'CONNECTED';
+      qrDataURL = null;
+    });
 
-  client.on('authenticated', () => {
-    console.log('[WhatsApp] Client authenticated.');
-  });
+    client.on('authenticated', () => {
+      console.log('[WhatsApp] Client authenticated.');
+    });
 
-  client.on('auth_failure', (msg) => {
-    console.error('[WhatsApp] Authentication failure:', msg);
+    client.on('auth_failure', (msg) => {
+      console.error('[WhatsApp] Authentication failure:', msg);
+      clientStatus = 'DISCONNECTED';
+      qrDataURL = null;
+    });
+
+    client.on('disconnected', (reason) => {
+      console.log('[WhatsApp] Client was disconnected:', reason);
+      clientStatus = 'DISCONNECTED';
+      qrDataURL = null;
+      client = null;
+    });
+
+    client.initialize().catch(err => {
+      console.error('[WhatsApp] Initialization error:', err);
+      clientStatus = 'DISCONNECTED';
+      client = null;
+    });
+  } catch (err) {
+    console.error('[WhatsApp] Failed to initialize Puppeteer / WhatsApp:', err.message);
     clientStatus = 'DISCONNECTED';
-    qrDataURL = null;
-  });
-
-  client.on('disconnected', (reason) => {
-    console.log('[WhatsApp] Client was disconnected:', reason);
-    clientStatus = 'DISCONNECTED';
-    qrDataURL = null;
     client = null;
-    // Attempt to reconnect by restarting client if needed, 
-    // but better to let user scan again if it was a real disconnect.
-  });
-
-  client.initialize().catch(err => {
-    console.error('[WhatsApp] Initialization error:', err);
-    clientStatus = 'DISCONNECTED';
-  });
+  }
 }
 
 function getStatus() {
