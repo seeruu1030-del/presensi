@@ -472,8 +472,27 @@ app.post('/api/whatsapp/logout', async (req, res) => {
   res.json({ success: true, message: 'WhatsApp logged out & resetting.' });
 });
 
+async function seedDefaultAdmin() {
+  try {
+    const adminCount = await prisma.admin.count();
+    if (adminCount === 0) {
+      await prisma.admin.create({
+        data: {
+          username: 'admin',
+          password: 'password',
+          nama: 'Administrator'
+        }
+      });
+      console.log('[Seed] Default admin account created: admin / password');
+    }
+  } catch (e) {
+    console.error('[Seed] Auto-seed admin failed:', e.message);
+  }
+}
+
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
+  seedDefaultAdmin();
   try {
     whatsapp.initializeWhatsApp(); // Start WA client safely
   } catch (err) {
