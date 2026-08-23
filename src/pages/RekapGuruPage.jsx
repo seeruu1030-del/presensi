@@ -319,7 +319,7 @@ export const RekapGuruPage = () => {
 
       const headers1 = [
         'No',
-        'NIP',
+        'NIK/NUPTK/NIP',
         'Nama Personel',
         'TANGGAL',
         ...Array(daysInMonth - 1).fill(''),
@@ -342,7 +342,7 @@ export const RekapGuruPage = () => {
 
       const rows = monthlyMatrixData.map((row, idx) => [
         idx + 1,
-        { t: 's', v: String(row.nip || '-') },
+        { t: 's', v: String((row.nip && row.nip.trim()) || (row.nuptk && row.nuptk.trim()) || (row.nik && row.nik.trim()) || '-') },
         row.nama || '',
         ...row.dailyStatus.map(st => {
           if (st.isHoliday) {
@@ -392,7 +392,7 @@ export const RekapGuruPage = () => {
         } else if (cellRef.r >= 6 && cellRef.r <= 5 + rows.length) {
           if (!cell.s.alignment) {
             cell.s.alignment = { vertical: 'center' };
-            if (cellRef.c === 0 || cellRef.c >= 3) {
+            if (cellRef.c === 0 || cellRef.c === 1 || cellRef.c >= 3) {
               cell.s.alignment.horizontal = 'center';
             }
           }
@@ -439,7 +439,7 @@ export const RekapGuruPage = () => {
       // Row 1 Header for 6 Months
       const headers1 = [
         'No',
-        'NIP',
+        'NIK/NUPTK/NIP',
         'Nama Personel',
         ...semesterMonths.flatMap(m => [m.label, '', '', '']),
         'JUMLAH',
@@ -459,7 +459,7 @@ export const RekapGuruPage = () => {
 
       const rows = semesterMatrixData.map((row, idx) => [
         idx + 1,
-        { t: 's', v: String(row.nip || '-') },
+        { t: 's', v: String((row.nip && row.nip.trim()) || (row.nuptk && row.nuptk.trim()) || (row.nik && row.nik.trim()) || '-') },
         row.nama || '',
         ...row.monthlyStats.flatMap(m => [m.hadir, m.izin, m.sakit, m.alpa]),
         row.totalHadir,
@@ -495,7 +495,7 @@ export const RekapGuruPage = () => {
           cell.s.alignment = { horizontal: 'center', vertical: 'center' };
         } else if (cellRef.r >= 6 && cellRef.r <= 5 + rows.length) {
           cell.s.alignment = { vertical: 'center' };
-          if (cellRef.c === 0 || cellRef.c >= 3) {
+          if (cellRef.c === 0 || cellRef.c === 1 || cellRef.c >= 3) {
             cell.s.alignment.horizontal = 'center';
           }
         }
@@ -657,14 +657,21 @@ export const RekapGuruPage = () => {
       {/* Printable Area Container */}
       <div className="printable-area card-modern" style={{ padding: '1.5rem', background: '#fff' }}>
         {/* Printable Header Title */}
-        <div className="only-print" style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>REKAPITULASI PRESENSI GURU & TENDIK</h2>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 800, margin: '0.2rem 0 0', textTransform: 'uppercase', color: '#0f172a' }}>
-            {profilSekolah?.namaSekolah || profilSekolah?.nama_sekolah || 'MIN 1 CIANJUR'}
-          </h3>
-          <p style={{ fontSize: '0.85rem', margin: '0.25rem 0 0' }}>
-            Kategori: {filterKategori} | {jenisRekap === 'Bulanan' ? `Periode: ${getBulanNamaIndo(selectedBulan)}` : `Semester ${selectedSemester}`} (TP {tapelAktif})
-          </p>
+        <div className="only-print" style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem', position: 'relative' }}>
+          {profilSekolah?.logo && (
+            <div style={{ position: 'absolute', left: '12%', top: '50%', transform: 'translateY(-50%)' }}>
+              <img src={profilSekolah.logo} alt="Logo Sekolah" style={{ height: '55px', width: 'auto' }} />
+            </div>
+          )}
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>REKAPITULASI PRESENSI GURU & TENDIK</h2>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, margin: '0.2rem 0 0', textTransform: 'uppercase', color: '#0f172a' }}>
+              {profilSekolah?.namaSekolah || profilSekolah?.nama_sekolah || 'MIN 1 CIANJUR'}
+            </h3>
+            <p style={{ fontSize: '0.85rem', margin: '0.25rem 0 0' }}>
+              Kategori: {filterKategori} | {jenisRekap === 'Bulanan' ? `Periode: ${getBulanNamaIndo(selectedBulan)}` : `Semester ${selectedSemester}`} (TP {tapelAktif})
+            </p>
+          </div>
         </div>
 
         {/* VIEW 1: MONTHLY MATRIX TABLE */}
@@ -675,8 +682,8 @@ export const RekapGuruPage = () => {
                 {/* Row 1: Group Headers */}
                 <tr style={{ background: '#f1f5f9' }}>
                   <th rowSpan={2} style={{ width: '35px', textAlign: 'center', verticalAlign: 'middle', background: '#f1f5f9', color: '#1e293b', fontWeight: 800 }}>NO</th>
-                  <th rowSpan={2} style={{ minWidth: '170px', textAlign: 'center', verticalAlign: 'middle', background: '#f1f5f9', color: '#1e293b', fontWeight: 800 }}>NAMA PERSONEL</th>
-                  <th rowSpan={2} style={{ width: '90px', textAlign: 'center', verticalAlign: 'middle', background: '#f1f5f9', color: '#1e293b', fontWeight: 800 }}>NIP</th>
+                  <th rowSpan={2} style={{ minWidth: '130px', textAlign: 'center', verticalAlign: 'middle', background: '#f1f5f9', color: '#1e293b', fontWeight: 800 }}>NAMA PERSONEL</th>
+                  <th rowSpan={2} style={{ minWidth: '100px', textAlign: 'center', verticalAlign: 'middle', background: '#f1f5f9', color: '#1e293b', fontWeight: 800 }}>NIK/NUPTK/NIP</th>
                   
                   {/* TANGGAL Header Group */}
                   <th 
@@ -712,19 +719,19 @@ export const RekapGuruPage = () => {
                     JUMLAH
                   </th>
 
-                  <th rowSpan={2} style={{ width: '60px', textAlign: 'center', verticalAlign: 'middle', background: '#f1f5f9', color: '#1e293b', fontWeight: 800 }}>%</th>
+                  <th rowSpan={2} style={{ width: '40px', textAlign: 'center', verticalAlign: 'middle', background: '#f1f5f9', color: '#1e293b', fontWeight: 800 }}>%</th>
                 </tr>
                 {/* Row 2: Sub Headers (Dates & Counts) */}
                 <tr style={{ background: '#f8fafc' }}>
                   {daysArray.map(d => (
-                    <th key={d} style={{ width: '25px', textAlign: 'center', padding: '0.25rem 0.1rem', color: '#64748b', fontSize: '0.75rem', fontWeight: 700 }}>
+                    <th key={d} style={{ width: '20px', minWidth: '20px', maxWidth: '20px', textAlign: 'center', padding: '0.25rem 0', color: '#64748b', fontSize: '0.75rem', fontWeight: 700 }}>
                       {d}
                     </th>
                   ))}
-                  <th style={{ width: '30px', textAlign: 'center', color: '#15803d', fontWeight: 800 }}>H</th>
-                  <th style={{ width: '30px', textAlign: 'center', color: '#0369a1', fontWeight: 800 }}>I</th>
-                  <th style={{ width: '30px', textAlign: 'center', color: '#d97706', fontWeight: 800 }}>S</th>
-                  <th style={{ width: '30px', textAlign: 'center', color: '#dc2626', fontWeight: 800 }}>A</th>
+                  <th style={{ width: '25px', textAlign: 'center', color: '#15803d', fontWeight: 800 }}>H</th>
+                  <th style={{ width: '25px', textAlign: 'center', color: '#0369a1', fontWeight: 800 }}>I</th>
+                  <th style={{ width: '25px', textAlign: 'center', color: '#d97706', fontWeight: 800 }}>S</th>
+                  <th style={{ width: '25px', textAlign: 'center', color: '#dc2626', fontWeight: 800 }}>A</th>
                 </tr>
               </thead>
               <tbody>
@@ -737,9 +744,9 @@ export const RekapGuruPage = () => {
                 ) : (
                   monthlyMatrixData.map((row, idx) => (
                     <tr key={row.id}>
-                      <td style={{ fontWeight: 600, color: '#1e293b', textAlign: 'center', padding: '0.35rem 0.5rem' }}>{idx + 1}</td>
-                      <td style={{ fontWeight: 700, color: '#1e293b', padding: '0.35rem 0.5rem' }}>{row.nama}</td>
-                      <td style={{ fontFamily: 'monospace', color: '#475569', fontSize: '0.7rem', padding: '0.35rem 0.5rem' }}>{row.nip || '-'}</td>
+                      <td style={{ fontWeight: 600, color: '#1e293b', textAlign: 'center', padding: '0.35rem 0.5rem', fontSize: '0.72rem' }}>{idx + 1}</td>
+                      <td style={{ fontWeight: 700, color: '#1e293b', padding: '0.35rem 0.5rem', fontSize: '0.72rem', whiteSpace: 'nowrap' }}>{row.nama}</td>
+                      <td style={{ fontFamily: 'monospace', color: '#475569', fontSize: '0.72rem', padding: '0.35rem 0.5rem', whiteSpace: 'nowrap', textAlign: 'center' }}>{(row.nip && row.nip.trim()) || (row.nuptk && row.nuptk.trim()) || (row.nik && row.nik.trim()) || '-'}</td>
                       
                       {row.dailyStatus.map((st, dIdx) => {
                         const isHol = st.isHoliday;
@@ -761,7 +768,10 @@ export const RekapGuruPage = () => {
                                 verticalAlign: 'middle',
                                 borderLeft: '1px solid #fecdd3',
                                 borderRight: '1px solid #fecdd3',
-                                overflow: 'hidden'
+                                overflow: 'hidden',
+                                width: '20px',
+                                minWidth: '20px',
+                                maxWidth: '20px'
                               }}
                             >
                               <div style={{ 
@@ -770,7 +780,7 @@ export const RekapGuruPage = () => {
                                 whiteSpace: 'nowrap',
                                 color: '#be123c',
                                 fontWeight: 700,
-                                fontSize: '0.7rem',
+                                fontSize: '0.65rem',
                                 letterSpacing: '0.05em',
                                 display: 'inline-flex',
                                 alignItems: 'center',
@@ -806,8 +816,11 @@ export const RekapGuruPage = () => {
                             key={dIdx} 
                             title={`${dIdx + 1} ${getBulanNamaIndo(selectedBulan)}: ${st.title}`}
                             style={{ 
+                              width: '20px',
+                              minWidth: '20px',
+                              maxWidth: '20px',
                               textAlign: 'center', 
-                              padding: '0.25rem 0.1rem',
+                              padding: '0.25rem 0',
                               background: bg,
                               color: color,
                               fontWeight: st.code !== '-' ? 800 : 400,
@@ -818,11 +831,11 @@ export const RekapGuruPage = () => {
                           </td>
                         );
                       })}
-                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#15803d', background: '#f0fdf4', padding: '0.35rem' }}>{row.hadirCount}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#0369a1', background: '#f0f9ff', padding: '0.35rem' }}>{row.izinCount}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#d97706', background: '#fffbeb', padding: '0.35rem' }}>{row.sakitCount}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#dc2626', background: '#fef2f2', padding: '0.35rem' }}>{row.alpaCount}</td>
-                      <td style={{ textAlign: 'center', padding: '0.35rem' }}>
+                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#15803d', background: '#f0fdf4', padding: '0.35rem', fontSize: '0.75rem' }}>{row.hadirCount}</td>
+                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#0369a1', background: '#f0f9ff', padding: '0.35rem', fontSize: '0.75rem' }}>{row.izinCount}</td>
+                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#d97706', background: '#fffbeb', padding: '0.35rem', fontSize: '0.75rem' }}>{row.sakitCount}</td>
+                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#dc2626', background: '#fef2f2', padding: '0.35rem', fontSize: '0.75rem' }}>{row.alpaCount}</td>
+                      <td style={{ textAlign: 'center', padding: '0.35rem', fontSize: '0.75rem' }}>
                         <span style={{ fontWeight: 800, color: row.rate >= 75 ? '#10b981' : '#f59e0b' }}>
                           {row.rate}%
                         </span>
@@ -841,8 +854,8 @@ export const RekapGuruPage = () => {
                 {/* Row 1: Month Group Headers */}
                 <tr style={{ background: '#f1f5f9' }}>
                   <th rowSpan={2} style={{ width: '35px', textAlign: 'center', verticalAlign: 'middle', background: '#f1f5f9', color: '#1e293b', fontWeight: 800 }}>NO</th>
-                  <th rowSpan={2} style={{ minWidth: '170px', textAlign: 'center', verticalAlign: 'middle', background: '#f1f5f9', color: '#1e293b', fontWeight: 800 }}>NAMA PERSONEL</th>
-                  <th rowSpan={2} style={{ width: '90px', textAlign: 'center', verticalAlign: 'middle', background: '#f1f5f9', color: '#1e293b', fontWeight: 800 }}>NIP</th>
+                  <th rowSpan={2} style={{ minWidth: '130px', textAlign: 'center', verticalAlign: 'middle', background: '#f1f5f9', color: '#1e293b', fontWeight: 800 }}>NAMA PERSONEL</th>
+                  <th rowSpan={2} style={{ minWidth: '100px', textAlign: 'center', verticalAlign: 'middle', background: '#f1f5f9', color: '#1e293b', fontWeight: 800 }}>NIK/NUPTK/NIP</th>
                   
                   {/* 6 Months Header Groups */}
                   {semesterMonths.map(m => (
@@ -881,23 +894,23 @@ export const RekapGuruPage = () => {
                     JUMLAH
                   </th>
 
-                  <th rowSpan={2} style={{ width: '60px', textAlign: 'center', verticalAlign: 'middle', background: '#e0e7ff', color: '#3730a3', fontWeight: 800 }}>%</th>
+                  <th rowSpan={2} style={{ width: '40px', textAlign: 'center', verticalAlign: 'middle', background: '#e0e7ff', color: '#3730a3', fontWeight: 800 }}>%</th>
                 </tr>
                 {/* Row 2: Sub Headers (H I S A for each month) */}
                 <tr style={{ background: '#f8fafc' }}>
                   {semesterMonths.map(m => (
                     <React.Fragment key={`sub-${m.key}`}>
-                      <th style={{ width: '30px', textAlign: 'center', color: '#15803d', fontWeight: 800 }}>H</th>
-                      <th style={{ width: '30px', textAlign: 'center', color: '#0369a1', fontWeight: 800 }}>I</th>
-                      <th style={{ width: '30px', textAlign: 'center', color: '#d97706', fontWeight: 800 }}>S</th>
-                      <th style={{ width: '30px', textAlign: 'center', color: '#dc2626', fontWeight: 800 }}>A</th>
+                      <th style={{ width: '25px', textAlign: 'center', color: '#15803d', fontWeight: 800 }}>H</th>
+                      <th style={{ width: '25px', textAlign: 'center', color: '#0369a1', fontWeight: 800 }}>I</th>
+                      <th style={{ width: '25px', textAlign: 'center', color: '#d97706', fontWeight: 800 }}>S</th>
+                      <th style={{ width: '25px', textAlign: 'center', color: '#dc2626', fontWeight: 800 }}>A</th>
                     </React.Fragment>
                   ))}
                   {/* Totals Sub Headers */}
-                  <th style={{ width: '30px', textAlign: 'center', color: '#15803d', fontWeight: 800, background: '#f0fdf4' }}>H</th>
-                  <th style={{ width: '30px', textAlign: 'center', color: '#0369a1', fontWeight: 800, background: '#f0f9ff' }}>I</th>
-                  <th style={{ width: '30px', textAlign: 'center', color: '#d97706', fontWeight: 800, background: '#fffbeb' }}>S</th>
-                  <th style={{ width: '30px', textAlign: 'center', color: '#dc2626', fontWeight: 800, background: '#fef2f2' }}>A</th>
+                  <th style={{ width: '25px', textAlign: 'center', color: '#15803d', fontWeight: 800, background: '#f0fdf4' }}>H</th>
+                  <th style={{ width: '25px', textAlign: 'center', color: '#0369a1', fontWeight: 800, background: '#f0f9ff' }}>I</th>
+                  <th style={{ width: '25px', textAlign: 'center', color: '#d97706', fontWeight: 800, background: '#fffbeb' }}>S</th>
+                  <th style={{ width: '25px', textAlign: 'center', color: '#dc2626', fontWeight: 800, background: '#fef2f2' }}>A</th>
                 </tr>
               </thead>
               <tbody>
@@ -912,7 +925,7 @@ export const RekapGuruPage = () => {
                     <tr key={row.id}>
                       <td style={{ fontWeight: 600, color: '#94a3b8', textAlign: 'center', padding: '0.35rem 0.5rem' }}>{idx + 1}</td>
                       <td style={{ fontWeight: 700, color: '#1e293b', padding: '0.35rem 0.5rem' }}>{row.nama}</td>
-                      <td style={{ fontFamily: 'monospace', color: '#475569', fontSize: '0.7rem', padding: '0.35rem 0.5rem' }}>{row.nip || '-'}</td>
+                      <td style={{ fontFamily: 'monospace', color: '#475569', fontSize: '0.7rem', padding: '0.35rem 0.5rem', whiteSpace: 'nowrap', textAlign: 'center' }}>{(row.nip && row.nip.trim()) || (row.nuptk && row.nuptk.trim()) || (row.nik && row.nik.trim()) || '-'}</td>
                       
                       {row.monthlyStats.map(m => (
                         <React.Fragment key={m.monthKey}>

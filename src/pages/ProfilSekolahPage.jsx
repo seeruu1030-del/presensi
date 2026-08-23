@@ -236,7 +236,8 @@ export const ProfilSekolahPage = () => {
     logo: profilSekolah?.logo || '',
     mapsEmbed: profilSekolah?.mapsEmbed || profilSekolah?.maps_embed || '',
     latitude: profilSekolah?.latitude || '',
-    longitude: profilSekolah?.longitude || ''
+    longitude: profilSekolah?.longitude || '',
+    radius: profilSekolah?.radius || 0
   });
 
   useEffect(() => {
@@ -253,7 +254,8 @@ export const ProfilSekolahPage = () => {
         logo: profilSekolah.logo || '',
         mapsEmbed: profilSekolah.mapsEmbed || profilSekolah.maps_embed || '',
         latitude: profilSekolah.latitude || '',
-        longitude: profilSekolah.longitude || ''
+        longitude: profilSekolah.longitude || '',
+        radius: profilSekolah.radius || 0
       });
     }
   }, [profilSekolah]);
@@ -352,7 +354,8 @@ export const ProfilSekolahPage = () => {
     const payload = {
       ...formData,
       latitude: finalLat,
-      longitude: finalLng
+      longitude: finalLng,
+      radius: formData.radius ? Number(formData.radius) : 0
     };
 
     if (saveProfilSekolah) {
@@ -618,7 +621,7 @@ export const ProfilSekolahPage = () => {
           </div>
 
           {/* Display Extracted Latitude & Longitude Inputs */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginTop: '1rem', background: '#f8fafc', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.25rem', marginTop: '1rem', background: '#f8fafc', padding: '1.25rem', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label" style={{ fontWeight: 700, color: '#1e293b' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -647,6 +650,22 @@ export const ProfilSekolahPage = () => {
                 onChange={e => handleInteractivePositionChange(formData.latitude, e.target.value)}
                 placeholder="e.g. 107.14789"
                 style={{ background: '#ffffff', fontWeight: 700, color: '#0284c7' }}
+              />
+            </div>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label" style={{ fontWeight: 700, color: '#1e293b' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <MapPin size={14} color="#ea580c" /> Radius Presensi (Meter)
+                </span>
+              </label>
+              <input 
+                type="number" 
+                className="form-control" 
+                value={formData.radius}
+                onChange={e => setFormData({ ...formData, radius: e.target.value })}
+                placeholder="e.g. 5"
+                min="0"
+                style={{ background: '#ffffff', fontWeight: 700, color: '#ea580c' }}
               />
             </div>
           </div>

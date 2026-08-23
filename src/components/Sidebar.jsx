@@ -25,7 +25,7 @@ import {
   ClipboardEdit
 } from 'lucide-react';
 
-export const Sidebar = () => {
+export const Sidebar = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
   const { activeMenu, setActiveMenu, profilSekolah } = useApp();
   const { user, logout } = useAuth();
   
@@ -190,8 +190,13 @@ export const Sidebar = () => {
 
   const schoolName = profilSekolah?.namaSekolah || profilSekolah?.nama_sekolah || 'SMK / SMA Negeri';
 
+  const handleMenuClick = (id) => {
+    setActiveMenu(id);
+    if (setIsMobileMenuOpen) setIsMobileMenuOpen(false);
+  };
+
   return (
-    <aside className="app-sidebar" style={sidebarStyles.container}>
+    <aside className={`app-sidebar ${isMobileMenuOpen ? 'mobile-open' : ''}`} style={sidebarStyles.container}>
       {/* Brand Logo Header */}
       <div style={sidebarStyles.brand}>
         {profilSekolah?.logo ? (
@@ -276,7 +281,7 @@ export const Sidebar = () => {
                             return (
                               <button
                                 key={subItem.id}
-                                onClick={() => setActiveMenu(subItem.id)}
+                                onClick={() => handleMenuClick(subItem.id)}
                                 style={{
                                   ...sidebarStyles.navItem,
                                   padding: '0.55rem 0.75rem',
@@ -313,7 +318,7 @@ export const Sidebar = () => {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setActiveMenu(item.id)}
+                    onClick={() => handleMenuClick(item.id)}
                     style={{
                       ...sidebarStyles.navItem,
                       ...(isActive ? sidebarStyles.navItemActive : {}),

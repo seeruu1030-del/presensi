@@ -26,6 +26,7 @@ const AppContent = () => {
   const { activeMenu } = useApp();
   const { user, isLoading } = useAuth();
   const [verifyId, setVerifyId] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkVerifyUrl = () => {
@@ -136,10 +137,22 @@ const AppContent = () => {
 
   return (
     <div className="app-layout">
-      <Sidebar />
+      {/* Mobile Overlay */}
+      <div 
+        className={`mobile-overlay ${isMobileMenuOpen ? 'mobile-open' : ''}`}
+        onClick={() => setIsMobileMenuOpen(false)}
+      />
+      
+      <Sidebar 
+        isMobileMenuOpen={isMobileMenuOpen} 
+        setIsMobileMenuOpen={setIsMobileMenuOpen} 
+      />
       <div className="main-content">
-        <Header />
-        <main style={{ flex: 1 }}>
+        <Header 
+          isMobileMenuOpen={isMobileMenuOpen} 
+          setIsMobileMenuOpen={setIsMobileMenuOpen} 
+        />
+        <main style={{ flex: 1, minWidth: 0 }}>
           {renderCurrentPage()}
         </main>
       </div>

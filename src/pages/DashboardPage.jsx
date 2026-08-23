@@ -98,9 +98,9 @@ export const DashboardPage = () => {
         <button 
           onClick={() => setActiveMenu('scan-qr')}
           className="btn btn-primary"
-          style={{ padding: '0.875rem 1.5rem', borderRadius: '14px', fontSize: '0.95rem' }}
+          style={{ padding: '0.875rem 1.5rem', borderRadius: '14px', fontSize: '0.95rem', whiteSpace: 'normal', maxWidth: '100%', textAlign: 'center' }}
         >
-          <QrCode size={22} />
+          <QrCode size={22} style={{ flexShrink: 0 }} />
           <span>Buka Kamera Scanner QR</span>
         </button>
       </div>
@@ -175,7 +175,7 @@ export const DashboardPage = () => {
       {/* Main Content Grid: Recent Scan Stream + Quick Actions */}
       <div style={dashStyles.mainGrid}>
         {/* Left Column: Live Scan Feed with Separate Tabs */}
-        <div className="card-modern" style={{ padding: '1.5rem', flex: 2 }}>
+        <div className="card-modern dash-feed-col" style={{ padding: '1.5rem', flex: 2 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>Log Presensi Terkini Hari Ini</h3>
@@ -183,7 +183,7 @@ export const DashboardPage = () => {
             </div>
 
             {/* Segmented Control Tabs: Semua vs Guru vs Siswa */}
-            <div style={{ display: 'flex', background: '#f1f5f9', padding: '0.3rem', borderRadius: '12px', gap: '0.3rem' }}>
+            <div style={{ display: 'flex', background: '#f1f5f9', padding: '0.3rem', borderRadius: '12px', gap: '0.3rem', flexWrap: 'wrap' }}>
               <button
                 type="button"
                 onClick={() => setDashLogTab('semua')}
@@ -363,7 +363,7 @@ export const DashboardPage = () => {
         </div>
 
         {/* Right Column: Quick Navigation Cards */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="dash-nav-col" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {/* Action 1: Data Master Link */}
           <div 
             className="card-modern" 
@@ -592,11 +592,12 @@ const WeeklyAttendanceChart = ({ presensiLogs }) => {
                 onMouseLeave={() => setHoveredDay(null)}
                 style={{
                   height: '100%',
+                  flex: 1,
                   display: 'flex',
                   alignItems: 'flex-end',
-                  gap: '6px',
+                  justifyContent: 'center',
+                  gap: '4px',
                   position: 'relative',
-                  padding: '0 0.5rem',
                   cursor: 'pointer'
                 }}
               >
@@ -627,7 +628,8 @@ const WeeklyAttendanceChart = ({ presensiLogs }) => {
                 {/* Guru & Tendik Bar */}
                 {(activeFilter === 'all' || activeFilter === 'guru') && (
                   <div style={{
-                    width: activeFilter === 'all' ? '20px' : '36px',
+                    flex: 1,
+                    maxWidth: activeFilter === 'all' ? '20px' : '36px',
                     height: `${Math.max(4, hGuruPercent)}%`,
                     background: 'linear-gradient(180deg, #a855f7 0%, #7e22ce 100%)',
                     borderRadius: '6px 6px 0 0',
@@ -636,7 +638,7 @@ const WeeklyAttendanceChart = ({ presensiLogs }) => {
                     position: 'relative'
                   }}>
                     {item.guruCount > 0 && (
-                      <span style={{ position: 'absolute', top: '-18px', left: '50%', transform: 'translateX(-50%)', fontSize: '0.68rem', fontWeight: 800, color: '#7e22ce' }}>
+                      <span className="hide-on-mobile" style={{ position: 'absolute', top: '-18px', left: '50%', transform: 'translateX(-50%)', fontSize: '0.68rem', fontWeight: 800, color: '#7e22ce' }}>
                         {item.guruCount}
                       </span>
                     )}
@@ -646,7 +648,8 @@ const WeeklyAttendanceChart = ({ presensiLogs }) => {
                 {/* Siswa Bar */}
                 {(activeFilter === 'all' || activeFilter === 'siswa') && (
                   <div style={{
-                    width: activeFilter === 'all' ? '20px' : '36px',
+                    flex: 1,
+                    maxWidth: activeFilter === 'all' ? '20px' : '36px',
                     height: `${Math.max(4, hSiswaPercent)}%`,
                     background: 'linear-gradient(180deg, #6366f1 0%, #4338ca 100%)',
                     borderRadius: '6px 6px 0 0',
@@ -655,7 +658,7 @@ const WeeklyAttendanceChart = ({ presensiLogs }) => {
                     position: 'relative'
                   }}>
                     {item.siswaCount > 0 && (
-                      <span style={{ position: 'absolute', top: '-18px', left: '50%', transform: 'translateX(-50%)', fontSize: '0.68rem', fontWeight: 800, color: '#4338ca' }}>
+                      <span className="hide-on-mobile" style={{ position: 'absolute', top: '-18px', left: '50%', transform: 'translateX(-50%)', fontSize: '0.68rem', fontWeight: 800, color: '#4338ca' }}>
                         {item.siswaCount}
                       </span>
                     )}
@@ -669,16 +672,17 @@ const WeeklyAttendanceChart = ({ presensiLogs }) => {
         {/* Day Labels at Bottom */}
         <div style={{ position: 'absolute', bottom: '0.5rem', left: '3rem', right: '1rem', display: 'flex', justifyContent: 'space-around' }}>
           {weeklyData.map((item, idx) => (
-            <div key={idx} style={{ textAlign: 'center' }}>
+            <div key={idx} style={{ textAlign: 'center', flex: 1 }}>
               <span style={{
-                fontSize: '0.78rem',
+                fontSize: '0.75rem',
                 fontWeight: item.isToday ? 800 : 600,
                 color: item.isToday ? '#4338ca' : '#64748b',
-                padding: item.isToday ? '0.2rem 0.6rem' : '0',
+                padding: item.isToday ? '0.1rem 0.2rem' : '0',
                 background: item.isToday ? '#e0e7ff' : 'transparent',
                 borderRadius: '8px'
               }}>
-                {item.dayName}
+                <span className="hide-on-mobile">{item.dayName}</span>
+                <span className="show-on-mobile" style={{ display: 'none' }}>{item.shortDay}</span>
               </span>
             </div>
           ))}

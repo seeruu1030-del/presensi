@@ -270,7 +270,8 @@ export const AppProvider = ({ children }) => {
             logo: profil.logo || '',
             mapsEmbed: profil.maps_embed || profil.mapsEmbed || '',
             latitude: profil.latitude || '',
-            longitude: profil.longitude || ''
+            longitude: profil.longitude || '',
+            radius: profil.radius || 0
           });
         }
         if (peng && peng.id) {
@@ -1468,7 +1469,8 @@ export const AppProvider = ({ children }) => {
         logo: newProfil.logo || '',
         maps_embed: newProfil.mapsEmbed || newProfil.maps_embed || '',
         latitude: newProfil.latitude || '',
-        longitude: newProfil.longitude || ''
+        longitude: newProfil.longitude || '',
+        radius: newProfil.radius ? Number(newProfil.radius) : 0
       };
 
       const saved = await api.saveProfilSekolah(payload);
@@ -1482,7 +1484,8 @@ export const AppProvider = ({ children }) => {
         logo: saved.logo || '',
         mapsEmbed: saved.maps_embed || saved.mapsEmbed || '',
         latitude: saved.latitude || '',
-        longitude: saved.longitude || ''
+        longitude: saved.longitude || '',
+        radius: saved.radius || 0
       };
 
       setProfilSekolah(normalized);

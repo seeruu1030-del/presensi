@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { Clock, Calendar, QrCode, Sparkles } from 'lucide-react';
+import { Clock, Calendar, QrCode, Sparkles, Menu } from 'lucide-react';
 
-export const Header = () => {
+export const Header = ({ isMobileMenuOpen, setIsMobileMenuOpen }) => {
   const { getTapelAktif, semesterAktif, setActiveMenu, activeMenu, profilSekolah } = useApp();
   const [time, setTime] = useState(new Date());
 
@@ -51,11 +51,20 @@ export const Header = () => {
   return (
     <header className="app-header no-print" style={headerStyles.header}>
       {/* Page Title & Breadcrumb */}
-      <div>
-        <h2 style={headerStyles.title}>{getPageTitle()}</h2>
-        <div style={headerStyles.breadcrumb}>
-          <Sparkles size={14} color="#6366f1" />
-          <span>Sistem Informasi Presensi Digital {schoolName ? `• ${schoolName}` : 'Sekolah'}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <button 
+          className="btn-icon mobile-menu-btn" 
+          onClick={() => setIsMobileMenuOpen(true)}
+          title="Buka Menu"
+        >
+          <Menu size={22} color="#0f172a" />
+        </button>
+        <div>
+          <h2 style={headerStyles.title}>{getPageTitle()}</h2>
+          <div style={headerStyles.breadcrumb}>
+            <Sparkles size={14} color="#6366f1" />
+            <span className="hide-on-mobile">Sistem Informasi Presensi Digital {schoolName ? `• ${schoolName}` : 'Sekolah'}</span>
+          </div>
         </div>
       </div>
 

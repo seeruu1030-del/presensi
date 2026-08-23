@@ -18,12 +18,14 @@ import {
 } from 'lucide-react';
 
 export const ScanQRPage = () => {
-  const { processQRScan, pengaturan, guruTendikList, siswaList, presensiLogs } = useApp();
+  const { processQRScan, pengaturan, guruTendikList, siswaList, presensiLogs, profilSekolah } = useApp();
 
   const [scanResult, setScanResult] = useState(null);
   const [manualCode, setManualCode] = useState('');
   const [audioEnabled, setAudioEnabled] = useState(pengaturan.voiceNotification ?? true);
   const [cameraActive, setCameraActive] = useState(true);
+  const [deviceLocation, setDeviceLocation] = useState(null);
+  const [locationError, setLocationError] = useState(null);
 
   const manualInputRef = useRef(null);
   const scanTimeoutRef = useRef(null);
@@ -62,6 +64,45 @@ export const ScanQRPage = () => {
     } catch (e) {}
   };
 
+  // Helper untuk menghitung jarak GPS
+  const getDistanceFromLatLonInM = (lat1, lon1, lat2, lon2) => {
+    const R = 6371000;
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * 
+      Math.sin(dLon / 2) * Math.sin(dLon / 2); 
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
+    return R * c;
+  };
+
+  // Setup GPS Geolocation
+  useEffect(() => {
+    if (profilSekolah?.radius > 0 && profilSekolah?.latitude && profilSekolah?.longitude) {
+      if (!navigator.geolocation) {
+        setLocationError('Browser tidak mendukung akses GPS.');
+        return;
+      }
+      
+      const watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          setDeviceLocation({
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude
+          });
+          setLocationError(null);
+        },
+        (err) => {
+          setLocationError('Gagal mendapatkan lokasi. Harap izinkan akses lokasi (GPS) pada browser.');
+        },
+        { enableHighAccuracy: true, maximumAge: 0 }
+      );
+      
+      return () => navigator.geolocation.clearWatch(watchId);
+    }
+  }, [profilSekolah]);
+
   // Handle Scan Logic with Camera Lock & Debounce
   const handleScanSuccess = async (decodedText) => {
     if (!decodedText) return;
@@ -73,6 +114,85 @@ export const ScanQRPage = () => {
       (lastScanCodeRef.current === decodedText && now - lastScanTimeRef.current < 4000)
     ) {
       return;
+    }
+
+    // Validasi Jarak / Radius GPS
+    if (profilSekolah?.radius > 0 && profilSekolah?.latitude && profilSekolah?.longitude) {
+      
+      // Coba cari nama user dari decodedText
+      let userName = '';
+      if (decodedText) {
+        let code = decodedText.trim();
+        if (code.includes('/verify/')) {
+          code = code.split('/verify/').pop();
+        }
+        const foundGT = guruTendikList.find(g => 
+          (g.qr_code || '').toLowerCase() === code.toLowerCase() || 
+          g.nuptk === code || g.nip === code || g.nik === code
+        );
+        if (foundGT) {
+          userName = foundGT.nama;
+        } else {
+          const foundSiswa = siswaList.find(s => 
+            (s.qr_code || '').toLowerCase() === code.toLowerCase() ||
+            s.nisn === code || s.nis === code
+          );
+          if (foundSiswa) {
+            userName = foundSiswa.nama;
+          }
+        }
+      }
+
+      const warningVoice = userName 
+        ? `Lokasi presensi ${userName.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())} diluar jangkauan`
+        : 'Lokasi presensi diluar jangkauan';
+
+      if (locationError) {
+        setScanResult({
+          success: false,
+          message: `Gagal Scan: ${locationError}`,
+          voiceMessage: 'Gagal scan. Akses lokasi tidak diizinkan.'
+        });
+        playBeep(300, 'sawtooth', 0.3);
+        speakVoice('Gagal scan. Akses lokasi tidak diizinkan.');
+        if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
+        scanTimeoutRef.current = setTimeout(() => setScanResult(null), 5000);
+        return;
+      }
+      
+      if (!deviceLocation) {
+        setScanResult({
+          success: false,
+          message: warningVoice,
+          voiceMessage: warningVoice
+        });
+        playBeep(300, 'sawtooth', 0.3);
+        speakVoice(warningVoice);
+        if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
+        scanTimeoutRef.current = setTimeout(() => setScanResult(null), 5000);
+        return;
+      }
+
+      const distance = getDistanceFromLatLonInM(
+        deviceLocation.latitude,
+        deviceLocation.longitude,
+        parseFloat(profilSekolah.latitude),
+        parseFloat(profilSekolah.longitude)
+      );
+
+      if (distance > profilSekolah.radius) {
+
+        setScanResult({
+          success: false,
+          message: `Scan Ditolak: Anda berada di luar jangkauan radius sekolah. (Jarak Anda: ${Math.round(distance)}m, Maksimal: ${profilSekolah.radius}m)`,
+          voiceMessage: warningVoice
+        });
+        playBeep(300, 'sawtooth', 0.3);
+        speakVoice(warningVoice);
+        if (scanTimeoutRef.current) clearTimeout(scanTimeoutRef.current);
+        scanTimeoutRef.current = setTimeout(() => setScanResult(null), 5000);
+        return;
+      }
     }
 
     isProcessingRef.current = true;

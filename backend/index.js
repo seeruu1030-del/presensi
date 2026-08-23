@@ -1,13 +1,12 @@
 const express = require('express');
 const cors = require('cors');
-const { PrismaClient } = require('@prisma/client');
 require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 
 const authRoutes = require('./routes/auth');
 const whatsapp = require('./whatsapp');
+const prisma = require('./db');
 
 const app = express();
-const prisma = new PrismaClient();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
@@ -48,6 +47,7 @@ app.post('/api/profil-sekolah', async (req, res) => {
       maps_embed: raw.maps_embed !== undefined || raw.mapsEmbed !== undefined ? String(raw.maps_embed || raw.mapsEmbed || '') : null,
       latitude: raw.latitude !== undefined ? String(raw.latitude || '') : null,
       longitude: raw.longitude !== undefined ? String(raw.longitude || '') : null,
+      radius: raw.radius !== undefined ? parseInt(raw.radius, 10) : 0,
     };
 
     let profil = await prisma.profilSekolah.findFirst();
@@ -134,7 +134,7 @@ app.post('/api/guru-tendik', async (req, res) => {
       status: raw.status || 'Aktif',
       alasan_nonaktif: raw.alasan_nonaktif || raw.alasanNonAktif || null,
       tgl_nonaktif: raw.tgl_nonaktif || raw.tglNonAktif || null,
-      qr_code: raw.qr_code || raw.qrCode || `GT-${raw.nip || raw.nuptk || Date.now()}`,
+      qr_code: raw.qr_code || raw.qrCode || `GT-${raw.nip || raw.nuptk || Date.now()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
       foto: raw.foto || null,
       password: raw.password || '123456'
     };
@@ -207,7 +207,7 @@ app.post('/api/siswa', async (req, res) => {
       no_hp: raw.no_hp || raw.noHp || null,
       alamat: raw.alamat || null,
       status: raw.status || 'Aktif',
-      qr_code: raw.qr_code || raw.qrCode || `SIS-${raw.nisn || Date.now()}`,
+      qr_code: raw.qr_code || raw.qrCode || `SIS-${raw.nisn || Date.now()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
       foto: raw.foto || null,
       password: raw.password || '123456'
     };

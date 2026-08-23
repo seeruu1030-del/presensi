@@ -170,6 +170,23 @@ export const ImportExcelModal = ({ isOpen, onClose, title, type, defaultKategori
   const handleConfirmImport = () => {
     if (parsedData.length === 0) return;
 
+    if (isGuru) {
+      const missingNikRows = parsedData.filter(r => !r.nik || String(r.nik).trim() === '');
+      if (missingNikRows.length > 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Peringatan: NIK Kosong!',
+          html: `Ditemukan <strong>${missingNikRows.length} data</strong> yang tidak memiliki NIK.<br/>Angka NIK tidak boleh kosong saat mengimpor data Guru/Tendik.<br/><br/>
+          <div style="text-align: left; max-height: 140px; overflow-y: auto; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 0.85rem; color: #92400e;">
+            ${missingNikRows.map((d, idx) => `<div>${idx + 1}. ${d.nama || 'Tanpa Nama'} - <span style="color: #dc2626; font-size: 0.75rem;">(NIK Kosong)</span></div>`).join('')}
+          </div>`,
+          confirmButtonColor: '#f59e0b',
+          confirmButtonText: 'Tutup & Perbaiki'
+        });
+        return;
+      }
+    }
+
     const duplicateRows = parsedData.filter(r => r.isDuplicate);
     const newRows = parsedData.filter(r => !r.isDuplicate);
 

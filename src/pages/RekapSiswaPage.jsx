@@ -774,14 +774,21 @@ export const RekapSiswaPage = () => {
       {/* Printable Area Container */}
       <div className="printable-area card-modern" style={{ padding: '1.5rem', background: '#fff' }}>
         {/* Printable Header Title */}
-        <div className="only-print" style={{ textAlign: 'center', marginBottom: '1rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>REKAPITULASI PRESENSI SISWA</h2>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 800, margin: '0.2rem 0 0', textTransform: 'uppercase', color: '#0f172a' }}>
-            {profilSekolah?.namaSekolah || profilSekolah?.nama_sekolah || 'MIN 1 CIANJUR'}
-          </h3>
-          <p style={{ fontSize: '0.85rem', margin: '0.25rem 0 0' }}>
-            Kelas: {selectedKelas} | {jenisRekap === 'Bulanan' ? `Periode: ${getBulanNamaIndo(selectedBulan)}` : `Semester ${selectedSemester}`} (TP {tapelAktif})
-          </p>
+        <div className="only-print" style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', position: 'relative' }}>
+          {profilSekolah?.logo && (
+            <div style={{ position: 'absolute', left: '12%', top: '50%', transform: 'translateY(-50%)' }}>
+              <img src={profilSekolah.logo} alt="Logo Sekolah" style={{ height: '55px', width: 'auto' }} />
+            </div>
+          )}
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: 0 }}>REKAPITULASI PRESENSI SISWA</h2>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 800, margin: '0.2rem 0 0', textTransform: 'uppercase', color: '#0f172a' }}>
+              {profilSekolah?.namaSekolah || profilSekolah?.nama_sekolah || 'MIN 1 CIANJUR'}
+            </h3>
+            <p style={{ fontSize: '0.85rem', margin: '0.25rem 0 0' }}>
+              Kelas: {selectedKelas} | {jenisRekap === 'Bulanan' ? `Periode: ${getBulanNamaIndo(selectedBulan)}` : `Semester ${selectedSemester}`} (TP {tapelAktif})
+            </p>
+          </div>
         </div>
 
         {/* VIEW 1: MONTHLY MATRIX TABLE */}
@@ -868,9 +875,9 @@ export const RekapSiswaPage = () => {
                 ) : (
                   monthlyMatrixData.map((row, idx) => (
                     <tr key={row.id}>
-                      <td style={{ fontWeight: 600, color: '#1e293b', textAlign: 'center', padding: '0.35rem 0.5rem' }}>{idx + 1}</td>
-                      <td style={{ fontWeight: 700, color: '#1e293b', padding: '0.35rem 0.5rem' }}>{row.nama}</td>
-                      <td style={{ fontFamily: 'monospace', fontSize: '0.75rem', textAlign: 'center', padding: '0.35rem 0.5rem' }}>{row.nisn || '-'}</td>
+                      <td style={{ fontWeight: 600, color: '#1e293b', textAlign: 'center', padding: '0.35rem 0.5rem', fontSize: '0.72rem' }}>{idx + 1}</td>
+                      <td style={{ fontWeight: 700, color: '#1e293b', padding: '0.35rem 0.5rem', fontSize: '0.72rem', whiteSpace: 'nowrap' }}>{row.nama}</td>
+                      <td style={{ fontFamily: 'monospace', fontSize: '0.72rem', textAlign: 'center', padding: '0.35rem 0.5rem', whiteSpace: 'nowrap' }}>{row.nisn || '-'}</td>
                       {row.dailyStatus.map((st, dIdx) => {
                         const isHol = st.isHoliday;
                         let bg = 'transparent';
@@ -892,7 +899,10 @@ export const RekapSiswaPage = () => {
                                 background: '#ffe4e6',
                                 borderLeft: '1px solid #fecdd3',
                                 borderRight: '1px solid #fecdd3',
-                                overflow: 'hidden'
+                                overflow: 'hidden',
+                                width: '28px',
+                                minWidth: '28px',
+                                maxWidth: '28px'
                               }}
                             >
                               <div style={{ 
@@ -902,7 +912,8 @@ export const RekapSiswaPage = () => {
                                 whiteSpace: 'nowrap',
                                 color: '#be123c',
                                 fontWeight: 800,
-                                fontSize: '0.72rem'
+                                fontSize: '0.65rem',
+                                letterSpacing: '0.05em'
                               }}>
                                 {st.title}
                               </div>
@@ -942,11 +953,11 @@ export const RekapSiswaPage = () => {
                           </td>
                         );
                       })}
-                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#15803d', background: '#f0fdf4', padding: '0.35rem' }}>{row.hadirCount}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#0369a1', background: '#f0f9ff', padding: '0.35rem' }}>{row.izinCount}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#d97706', background: '#fffbeb', padding: '0.35rem' }}>{row.sakitCount}</td>
-                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#dc2626', background: '#fef2f2', padding: '0.35rem' }}>{row.alpaCount}</td>
-                      <td style={{ textAlign: 'center', padding: '0.35rem' }}>
+                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#15803d', background: '#f0fdf4', padding: '0.35rem', fontSize: '0.75rem' }}>{row.hadirCount}</td>
+                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#0369a1', background: '#f0f9ff', padding: '0.35rem', fontSize: '0.75rem' }}>{row.izinCount}</td>
+                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#d97706', background: '#fffbeb', padding: '0.35rem', fontSize: '0.75rem' }}>{row.sakitCount}</td>
+                      <td style={{ textAlign: 'center', fontWeight: 800, color: '#dc2626', background: '#fef2f2', padding: '0.35rem', fontSize: '0.75rem' }}>{row.alpaCount}</td>
+                      <td style={{ textAlign: 'center', padding: '0.35rem', fontSize: '0.75rem' }}>
                         <span style={{ fontWeight: 800, color: row.rate >= 75 ? '#10b981' : '#f59e0b' }}>
                           {row.rate}%
                         </span>

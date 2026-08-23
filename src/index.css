@@ -656,3 +656,208 @@ body {
 #reader__dashboard_section_swaplink {
   display: none !important;
 }
+
+/* Responsive Overrides */
+.mobile-menu-btn {
+  display: none;
+}
+.mobile-overlay {
+  display: none;
+}
+.show-on-mobile {
+  display: none !important;
+}
+
+@media screen and (max-width: 1024px) {
+  .app-sidebar {
+    position: fixed !important;
+    left: -300px;
+    transition: left 0.3s ease;
+    z-index: 1000 !important;
+  }
+  .app-sidebar.mobile-open {
+    left: 0;
+  }
+  .mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .mobile-overlay.mobile-open {
+    display: block;
+    opacity: 1;
+  }
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+  .hide-on-mobile {
+    display: none !important;
+  }
+  .show-on-mobile {
+    display: inline !important;
+  }
+  .page-container {
+    padding: 1.25rem 1rem;
+  }
+  .app-header {
+    padding: 1rem !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  /* Global Flex Normalization */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .page-header > div {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  
+  .page-header button {
+    flex: 1;
+    min-width: 120px;
+  }
+
+  /* Card and Panel Normalization */
+  .card-modern {
+    padding: 1.25rem 1rem !important;
+  }
+  
+  /* Modal Normalization */
+  .modal-content {
+    max-width: 95vw !important;
+    width: 100% !important;
+    margin: 1rem auto;
+  }
+  .modal-header, .modal-footer {
+    padding: 1rem !important;
+  }
+  .modal-body {
+    padding: 1.25rem 1rem !important;
+  }
+  
+  /* Fix inline grid layouts inside modals for mobile */
+  .modal-body [style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  .modal-body [style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Dashboard specific fixes */
+  .dash-feed-col,
+  .dash-nav-col {
+    min-width: 100% !important;
+    flex: none !important;
+  }
+  
+  /* Filter Bars / Inline Forms */
+  .card-modern[style*="display: flex"] {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1rem !important;
+  }
+  .card-modern[style*="display: flex"] > div {
+    width: 100% !important;
+    justify-content: space-between;
+  }
+  .card-modern[style*="display: flex"] select,
+  .card-modern[style*="display: flex"] input {
+    flex: 1;
+    width: auto !important;
+    min-width: 0;
+  }
+
+  /* Typography adjustments for small screens */
+  .page-title {
+    font-size: 1.25rem;
+  }
+  .page-subtitle {
+    font-size: 0.8rem;
+  }
+  
+  /* Tables */
+  .table-responsive {
+    border-radius: var(--radius-lg);
+  }
+  .table-modern th, .table-modern td {
+    padding: 0.75rem 0.85rem;
+    font-size: 0.8rem;
+  }
+  
+  /* Buttons should wrap on very small screens */
+  .btn {
+    white-space: normal !important;
+    max-width: 100%;
+    text-align: center;
+  }
+}
+
+/* 
+ * ----------------------------------------------------
+ * BULLETPROOF MOBILE NORMALIZATION (Max 768px)
+ * ----------------------------------------------------
+ */
+@media screen and (max-width: 768px) {
+  html, body, #root, .app-layout, .main-content {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  .page-container {
+    padding: 1rem 0.5rem !important;
+    width: 100% !important;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  .card-modern {
+    padding: 1rem 0.75rem !important;
+    width: 100% !important;
+    box-sizing: border-box;
+    overflow-x: auto; /* allows inner tables to scroll if needed */
+  }
+
+  /* Force flex containers to wrap globally on mobile to prevent overflow */
+  .page-container div[style*="display: flex"] {
+    flex-wrap: wrap !important;
+  }
+
+  /* Exceptions where we don't want flex to wrap */
+  .badge, .btn, .btn-icon, .form-group {
+    flex-wrap: nowrap !important;
+  }
+
+  /* Responsive media */
+  img, video, canvas {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Responsive Inputs */
+  input, select, textarea {
+    max-width: 100%;
+  }
+
+  /* Ensure long words break instead of pushing layout */
+  p, h1, h2, h3, h4, h5, h6, span, div {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+

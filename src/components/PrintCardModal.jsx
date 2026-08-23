@@ -38,7 +38,7 @@ export const PrintCardModal = ({ item, type, onClose }) => {
   const isGuru = type === 'Guru' || type === 'Tendik' || item.kategori === 'Guru' || item.kategori === 'Tendik';
   const cardBg = isGuru ? bgCardGuru : bgCardSiswa;
   const idNumber = isGuru 
-    ? ((item.nuptk && item.nuptk.trim()) || (item.nip && item.nip.trim()) || (item.nik && item.nik.trim()) || '-') 
+    ? ((item.nip && item.nip.trim()) || (item.nuptk && item.nuptk.trim()) || (item.nik && item.nik.trim()) || '-') 
     : (item.nisn || '-');
 
   const content = (

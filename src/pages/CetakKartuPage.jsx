@@ -438,7 +438,7 @@ export const CetakKartuPage = ({ initialSelectedType = 'siswa', initialSelectedI
                         {item.nama}
                       </h4>
                       <div style={{ fontSize: '0.65rem', fontWeight: '800', letterSpacing: '0.04em', marginTop: '0.08rem' }}>
-                        {isGuru ? ((item.nuptk && item.nuptk.trim()) || (item.nip && item.nip.trim()) || (item.nik && item.nik.trim()) || '-') : (item.nisn || '-')}
+                        {isGuru ? ((item.nip && item.nip.trim()) || (item.nuptk && item.nuptk.trim()) || (item.nik && item.nik.trim()) || '-') : (item.nisn || '-')}
                       </div>
                     </div>
 

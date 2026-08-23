@@ -21,6 +21,7 @@ model ProfilSekolah {
   maps_embed         String?
   latitude           String?
   longitude          String?
+  radius             Int?    @default(0)
 }
 
 model Pengaturan {
